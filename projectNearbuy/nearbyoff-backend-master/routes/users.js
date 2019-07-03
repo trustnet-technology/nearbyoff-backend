@@ -1,5 +1,6 @@
 const _ =require("lodash");
 const bcrypt=require("bcrypt");
+const auth=require("../middleware/auth");
 const {User, validate} = require("../models/user");
 const Joi = require("joi");
 const express = require("express");
@@ -22,6 +23,8 @@ router.post("/signup", async (req, res) => {
   const token=user.generateAuthToken();
   res.header("x-auth-token", token).send(_.pick(user, ["_id", "name", "email"]));
 });
+
+
 
 router.post("/signin", async (req, res) => {
   const {error} = validatesignin(req.body);

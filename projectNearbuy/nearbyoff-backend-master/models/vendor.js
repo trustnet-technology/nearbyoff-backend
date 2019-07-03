@@ -69,6 +69,11 @@ const VendorSchema = new Schema({
     type: [String],
     default: [],
   },
+  is_approved:{
+    type:Number,
+    enum:[0,1,-1],
+    default:0
+  }
 });
 
 

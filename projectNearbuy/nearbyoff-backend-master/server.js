@@ -3,6 +3,8 @@ const logger = require("morgan");
 const cookieParser = require("cookie-parser");
 const vendors = require("./routes/vendors");
 const users = require("./routes/users");
+const leads = require("./routes/leads");
+const admin = require("./routes/admin");
 const products = require("./routes/products");
 const app = express();
 const bodyParser=require("body-parser");
@@ -35,7 +37,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use("/v1/api/vendors", vendors, apiLimiter);
+app.use("/v1/api/admin", admin, apiLimiter);
 app.use("/v1/api/users", users, apiLimiter);
+app.use("/v1/api/leads", leads, apiLimiter);
 app.use("/v1/api/products", products, apiLimiter);
 
 app.get("/", apiLimiter, function(req, res) {

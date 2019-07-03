@@ -65,4 +65,15 @@ router.get("/products/:vendor_id", auth, async (req, res) => {
 });
 
 
+router.get("/info/:vendor_id", auth, async (req, res) => {
+Vendor.findOne({vendor_id:req.params.vendor_id},{products:0,vendor_id:0,_id:0,user_id:0,__v:0})
+.then((data)=>{
+res.send({vendor_info:data});
+})
+.catch((err)=>{
+res.send({err});
+})
+});
+
+
 module.exports=router;
