@@ -24,7 +24,7 @@ let thread= new Thread({
     }]
 })
 thread=await thread.save();
-await Post.updateOne({post_id:req.body.post_id},{$push:{thread_collection:req.params.thread_id}});
+await Post.updateOne({post_id:req.body.post_id},{$push:{thread_collection:req.body.thread_id}});
 res.send(thread);
 })
 
