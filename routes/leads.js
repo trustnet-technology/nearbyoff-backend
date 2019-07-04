@@ -29,6 +29,7 @@ res.send(err);
 })
 });
 
+
 router.get('/vendor/:vendor_id',auth, async(req,res)=>{
 Lead.find({vendor_id:req.params.vendor_id},{_id:0,__v:0}).then((data)=>{
 res.send({leads:data})

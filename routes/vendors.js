@@ -50,7 +50,7 @@ router.put("/onboarding", auth, async (req, res) => {
 router.put("/onboarding_images", auth, async (req, res) => {
   const vendor=await Vendor.findOneAndUpdate({vendor_id: req.body.vendor_id},
       {$set: {category_images: req.body.category_images, shop_images: req.body.shop_images}}
-      , {new: true});
+      ,{new: true});
   res.send(vendor);
 });
 
@@ -74,6 +74,6 @@ res.send({vendor_info:data});
 res.send({err});
 })
 });
-
+//{ $inc: { quantity: -2, "metrics.orders": 1 } }
 
 module.exports=router;

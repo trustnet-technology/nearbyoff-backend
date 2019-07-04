@@ -31,4 +31,6 @@ router.get('/',auth,admin_middleware ,async(req,res)=>{
 res.send("Congrats you are an admin");
 });
 
+
+
 module.exports=router;
