@@ -10,7 +10,7 @@ const router = express.Router();
 router.post('/respond',auth,async(req,res)=>{
 parent_id=await Post.findOne({post_id:req.body.post_id},{vendor_id:1,_id:0});
 parent_id=await parent_id.vendor_id;
-console.log(parent_id);
+
 let thread= new Thread({
     post_id:req.body.post_id,
     thread_id:req.body.thread_id,
@@ -29,7 +29,8 @@ res.send(thread);
 })
 
 router.put('/respond/:thread_id',auth,async(req,res)=>{
-var parent_id=await Thread.findOne({thread_id:req.params.thread_id},{parent_id:1,_id:0,post_id:1});
+var parent_id=await Thread.findOne({thread_id:req.params.thread_id},{parent_id:1,_id:0});
+parent_id=parent_id.parent_id;
 if(parent_id==req.body.vendor_id)
 {
   var publisher='parent'
@@ -45,7 +46,7 @@ desc:req.body.desc,
 publisher:publisher
 }
 var thread=await Thread.updateOne({thread_id:req.params.thread_id},{$push:{response:response_object}});
-res.send({thread,post});
+res.send({thread});
 })
 
 
