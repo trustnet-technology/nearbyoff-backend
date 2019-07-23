@@ -7,6 +7,7 @@ const {Thread} = require("../models/thread");
 const express = require("express");
 const router = express.Router();
 
+
 router.post('/respond',auth,async(req,res)=>{
 parent_id=await Post.findOne({post_id:req.body.post_id},{vendor_id:1,_id:0});
 parent_id=await parent_id.vendor_id;
@@ -27,6 +28,8 @@ thread=await thread.save();
 await Post.updateOne({post_id:req.body.post_id},{$push:{thread_collection:req.body.thread_id}});
 res.send(thread);
 })
+
+
 
 router.put('/respond/:thread_id',auth,async(req,res)=>{
 var parent_id=await Thread.findOne({thread_id:req.params.thread_id},{parent_id:1,_id:0});

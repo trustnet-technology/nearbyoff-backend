@@ -1,7 +1,8 @@
 const _ =require("lodash");
-const bcrypt=require("bcrypt");
+const bcrypt=require("bcryptjs");
 const auth=require("../middleware/auth");
 const {User, validate} = require("../models/user");
+const {Vendor} = require("../models/vendor");
 const Joi = require("joi");
 const express = require("express");
 const router = express.Router();
@@ -12,7 +13,10 @@ router.post("/signup", async (req, res) => {
   if (error) return res.status(400).send(error.details[0].message);
 
   let user = await User.findOne({email: req.body.email});
-  if (user) return res.status(400).send("User already registered.");
+  if (user) return res.status(400).send({
+   success:false,
+   message:"User Already Registered." 
+  });
 
 
   user=new User(_.pick(req.body, ["name", "email", "password"]));
@@ -21,7 +25,7 @@ router.post("/signup", async (req, res) => {
 
   await user.save();
   const token=user.generateAuthToken();
-  res.header("x-auth-token", token).send(_.pick(user, ["_id", "name", "email"]));
+  res.header("x-auth-token", token).send(_.pick(user, ["name", "email"]));
 });
 
 
@@ -31,12 +35,20 @@ router.post("/signin", async (req, res) => {
   if (error) return res.status(400).send(error.details[0].message);
 
   const user = await User.findOne({email: req.body.email});
-  if (!user) return res.status(400).send("invalid email or password");
+  if (!user) return res.status(400).send({
+  success:false,
+  message:"Invalid Email"
+});
 
   const validpassword=await bcrypt.compare(req.body.password, user.password);
-  if (!validpassword) return res.status(400).send("invalid email or password");
+  if (!validpassword) return res.status(400).send({
+    success:false,
+    message:"Invalid Password"
+  });
+  var flag=await _.pick(user, ["isAdmin"]).isAdmin
+  var regflag= await _.pick(user, ["isOnboarded"]).isOnboarded
   const token=user.generateAuthToken();
-  res.send({token: token, message: "success login"});
+  res.send({token: token, message: "login Success",success:true,Admin:flag,Onboarded:regflag});
 });
 
 function validatesignin(user) {

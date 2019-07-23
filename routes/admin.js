@@ -27,6 +27,17 @@ res.send(e);
 });
 
 
+router.get('/unapproved_vendors',auth,admin_middleware ,async(req,res)=>{
+Vendor.find({is_approved:0})
+.then((d)=>{
+res.send(d)  
+}).catch((e)=>{
+res.send(e);
+})
+});
+
+
+
 router.get('/',auth,admin_middleware ,async(req,res)=>{
 res.send("Congrats you are an admin");
 });

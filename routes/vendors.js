@@ -1,7 +1,9 @@
 const _ =require("lodash");
-const bcrypt=require("bcrypt");
+
 const {Vendor} = require("../models/vendor");
 const {Product} = require("../models/product");
+const {User} = require("../models/user");
+
 const auth=require("../middleware/auth");
 const express = require("express");
 const router = express.Router();
@@ -11,8 +13,9 @@ const jwt=require("jsonwebtoken");
 router.post("/register", auth, async (req, res) => {
   const token=req.header("x-auth-token");
   const decoded=jwt.verify(token, "secretkey");
+  var Vendor_Id=String(decoded._id)+String(Date.now())
   const vendor= new Vendor({
-    vendor_id: String(decoded._id)+String(Date.now()),
+    vendor_id: Vendor_Id,
     user_id: decoded._id,
     category: req.body.category,
     contact_no: req.body.contact_no,
@@ -22,15 +25,14 @@ router.post("/register", auth, async (req, res) => {
       Address3: req.body.Address3,
     },
     vendor_name: req.body.vendor_name,
-    operating_hrs: {
-      opening_time: req.body.opening_time,
-      closing_time: req.body.closing_time,
-    },
+    
   });
   await vendor.save().catch((e)=>{
     res.send(e);
   });
-  res.send(vendor);
+  await User.findOneAndUpdate({_id:decoded._id},
+    {$set: {vendor_id: Vendor_Id}})
+  res.send({vendor,Success:true});
 });
 
 
@@ -41,27 +43,48 @@ router.put("/onboarding", auth, async (req, res) => {
     return res.send({message: "invalid request user not matched"});
   }
   const vendor=await Vendor.findOneAndUpdate({vendor_id: req.body.vendor_id},
-      {$set: {shop_desc: req.body.shop_desc, shop_name: req.body.shop_name}},
+      {$set:
+      {shop_desc: req.body.shop_desc, 
+      shop_name: req.body.shop_name,
+      operating_hrs: { opening_time: req.body.opening_time, closing_time: req.body.closing_time},
+    }},
       {useFindAndModify: false, new: true});
-  res.send(vendor);
+  await User.findOneAndUpdate({_id:decoded._id}, {$set: {isOnboarded:true }});
+  
+  res.send({vendor,Success:true});
 });
+
+
 
 
 router.put("/onboarding_images", auth, async (req, res) => {
   const vendor=await Vendor.findOneAndUpdate({vendor_id: req.body.vendor_id},
-      {$set: {category_images: req.body.category_images, shop_images: req.body.shop_images}}
+      {$push: {category_images: req.body.category_image, shop_images: req.body.shop_image}}
+      // {$set: {category_images: req.body.category_images, shop_images: req.body.shop_images}}
       ,{new: true});
-  res.send(vendor);
+  res.send({vendor,Success:true});
 });
+
+
 
 router.get("/products/:vendor_id", auth, async (req, res) => {
   Product.aggregate([
     {$match: {vendor_id: req.params.vendor_id}},
     {$group: {
-      _id: "$category", prices: {$push: "$Price"}}},
+      _id: "$category", prices: {$push: "$Price"},quantities:{$push:'$quantity'},Names:{$push:'$product_name'}}},
   ]).then((d)=>{
     res.send(d);
   });
+});
+
+router.get("/allproducts/:vendor_id", auth, async (req, res) => {
+  Product.find({vendor_id:req.params.vendor_id})
+  .then((d)=>{
+    res.send(d);
+  })
+  .catch((e)=>{
+    res.send(e)
+  })
 });
 
 
@@ -74,6 +97,5 @@ res.send({vendor_info:data});
 res.send({err});
 })
 });
-//{ $inc: { quantity: -2, "metrics.orders": 1 } }
 
 module.exports=router;

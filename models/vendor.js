@@ -29,12 +29,16 @@ const VendorSchema = new Schema({
   Address: {
     Address1: {
       type: String,
+      default:""
     },
     Address2: {
       type: String,
+      default:""
     },
     Address3: {
-      type: String},
+      type: String,
+      default:""
+    },
 
   },
   vendor_name: {
@@ -43,10 +47,12 @@ const VendorSchema = new Schema({
 
   operating_hrs: {
     closing_time: {
+      default:"",
       type: String,
     },
     opening_time: {
       type: String,
+      default:"",
     },
   },
   category: {
@@ -73,6 +79,16 @@ const VendorSchema = new Schema({
     type:Number,
     enum:[0,1,-1],
     default:0
+  },
+  coord:{
+    lat:{
+     type:String,
+     default:""
+    },
+    long:{
+      type:String,
+      default:""
+    }
   }
 });
 

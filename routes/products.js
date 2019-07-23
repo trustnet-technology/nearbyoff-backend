@@ -35,7 +35,8 @@ router.post("/products", auth, async (req, res) => {
 router.put("/product_image", auth, async (req, res) => {
   const product = await Product.findOneAndUpdate(
       {product_id: req.body.product_id},
-      {$set: {images: req.body.images}},
+      //{$set: {images: req.body.images}},
+      {$push: {images: req.body.image}}, 
       {useFindAndModify: false, new: true});
   res.status(200).send({"product": _.pick(product, ["images", "vendor_id", "product_id"])});
 });

@@ -25,6 +25,15 @@ const userSchema= new mongoose.Schema({
   },
   isAdmin: {
     type: Boolean,
+    default:false
+  },
+  isOnboarded: {
+    type: Boolean,
+    default:false
+  },
+  vendor_id:{
+    type:String,
+    default:""
   }
 });
 userSchema.methods.generateAuthToken=function() {

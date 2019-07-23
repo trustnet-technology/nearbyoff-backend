@@ -32,6 +32,10 @@ const PostSchema = new Schema({
   thread_collection:{
      type:[String],
      default:[] 
+  },
+  is_abusive:{
+    type:Boolean,
+    default:false
   }
 });
 

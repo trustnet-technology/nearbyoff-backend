@@ -32,6 +32,7 @@ const LeadSchema = new Schema({
   customer_name:{
     type:String  
   }
+  
 });
 
 

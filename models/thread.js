@@ -10,6 +10,10 @@ const ResponseSchema = new Schema({
     publisher:{
         type:String,
         enum:['parent','child']
+    },
+    is_abusive:{
+    type:Boolean,
+    default:false
     }
   });
 
@@ -32,6 +36,7 @@ const ThreadSchema = new Schema({
   response:{
       type:[ResponseSchema],
   }
+  
 
 });
 

@@ -7,6 +7,9 @@ const {Post} = require("../models/post");
 const {Thread} = require("../models/thread");
 const express = require("express");
 const router = express.Router();
+var nlp = require('compromise')
+fs = require('fs');
+
 
 router.post('/publish',auth,async(req,res)=>{
 let post= new Post({
@@ -22,6 +25,9 @@ let post= new Post({
 post=await post.save();
 res.send(post);
 })
+
+
+
 
 
 router.get('/collection',auth,async(req,res)=>{
