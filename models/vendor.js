@@ -29,11 +29,11 @@ const VendorSchema = new Schema({
   Address: {
     Address1: {
       type: String,
-      default:""
+      require:true    
     },
     Address2: {
       type: String,
-      default:""
+      require:true
     },
     Address3: {
       type: String,
@@ -54,9 +54,6 @@ const VendorSchema = new Schema({
       type: String,
       default:"",
     },
-  },
-  category: {
-    type: String,
   },
   category_images: {
     type: [String],
@@ -85,10 +82,14 @@ const VendorSchema = new Schema({
      type:String,
      default:""
     },
-    long:{
+    lng:{
       type:String,
       default:""
     }
+  },
+  is_main_vendor:{
+    type:Boolean,
+    default:false
   }
 });
 

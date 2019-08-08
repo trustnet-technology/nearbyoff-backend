@@ -6,7 +6,7 @@ const {Vendor} = require("../models/vendor");
 const Joi = require("joi");
 const express = require("express");
 const router = express.Router();
-
+const paginate = require('express-paginate');
 
 router.post("/signup", async (req, res) => {
   const {error} = validate(req.body);
@@ -24,7 +24,7 @@ router.post("/signup", async (req, res) => {
   user.password =await bcrypt.hash(user.password, salt);
 
   await user.save();
-  const token=user.generateAuthToken();
+  const token=user.generateAuthToken()
   res.header("x-auth-token", token).send(_.pick(user, ["name", "email"]));
 });
 
@@ -60,5 +60,55 @@ function validatesignin(user) {
   return Joi.validate(user, schema);
 }
 
+
+
+router.get('/all', async (req, res, next) => {
+var query={}
+query["name"] = 'aseem'
+User.find(query).then((d)=>{
+res.send(d)
+}).catch((e)=>{
+res.send(e)
+
+})
+
+
+})
+ 
+router.get('/allusers', async (req, res, next) => {
+ 
+  try {
+ 
+    const [ results, itemCount ] = await Promise.all([
+      User.find({}).limit(req.query.limit).skip(req.skip).lean().exec(),
+      User.count({})
+    ]);
+    console.log(req.query);
+    console.log(req.skip);
+
+    const pageCount = Math.ceil(itemCount / req.query.limit);
+ 
+    if (req.accepts('json')) {
+      // inspired by Stripe's API response for list objects
+      res.json({
+        total_pages:pageCount,
+        object: 'list',
+        has_more: paginate.hasNextPages(req)(pageCount),
+        data: results
+      });
+    } else {
+      res.render('users', {
+        users: results,
+        pageCount,
+        itemCount,
+        pages: paginate.getArrayPages(req)(3, pageCount, req.query.page)
+      });
+    }
+ 
+  } catch (err) {
+    next(err);
+  }
+ 
+});
 
 module.exports=router;

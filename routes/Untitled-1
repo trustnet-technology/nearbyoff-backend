@@ -1,0 +1,40 @@
+router.post("/register", auth, async (req, res) => {
+        var lat="";
+        var lng="";
+      
+        const token=req.header("x-auth-token");
+        const decoded=jwt.verify(token, "secretkey");
+        var Vendor_Id=String(decoded._id)+String(Date.now())
+        googleMapsClient.geocode({
+        address:req.body.Address1 +" "+req.body.Address2+" "+req.body.Address3}, async function(err, response) 
+          {
+          if (!err) 
+          {
+            lat=String(response.json.results[0].geometry.location.lat);
+            lng=String(response.json.results[0].geometry.location.lng);
+      
+        const vendor= new Vendor({
+          vendor_id: Vendor_Id,
+          user_id: decoded._id,
+          category: req.body.category,
+          contact_no: req.body.contact_no,
+          Address: {
+            Address1: req.body.Address1,
+            Address2: req.body.Address2,
+            Address3: req.body.Address3,
+          },
+          vendor_name: req.body.vendor_name,
+          coord:{lat:lat,lng:lng}
+          
+        });
+        await vendor.save().catch((e)=>{
+          res.send(e);
+        });
+        await User.findOneAndUpdate({_id:decoded._id},
+          {$set: {vendor_id: Vendor_Id}})
+        res.send({vendor,Success:true});
+          }
+          
+        });
+        
+      });

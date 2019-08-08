@@ -2,8 +2,8 @@ const mongoose= require("mongoose");
 
 Schema=mongoose.Schema;
 const ProductSchema = new Schema({
-  vendor_id: {
-    type: String,
+  vendor_id:{
+    type:String
   },
   category: {
     type: String,
@@ -21,16 +21,17 @@ const ProductSchema = new Schema({
     type: String,
     unique: true,
   },
-  Price: {
-    type: Number,
-
-  },
-  quantity: {
-    type: Number,
-
+  is_main_vendor:{
+    type:Boolean,
+    default:false
   },
   product_name: {
     type: String,
+    default:""
+  },
+  brand_name: {
+    type: String,
+    default:""
   },
   product_desc: {
     type: String,
@@ -39,11 +40,13 @@ const ProductSchema = new Schema({
     type: [String],
     default: [],
   },
-  is_approved:{
-    type:Number,
-    enum:[0,1,-1],
-    default:0
+  city:{
+    type:String
+  },
+  title:{
+    type:String
   }
+
 });
 
 

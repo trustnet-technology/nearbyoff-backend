@@ -1,8 +1,8 @@
 const mongoose= require("mongoose");
 
 Schema=mongoose.Schema;
-const LeadSchema = new Schema({
-  vendor_id: {
+const OrderSchema = new Schema({
+  vendor_id:{
     type: String,
     require:true
   },
@@ -35,10 +35,10 @@ const LeadSchema = new Schema({
   comment:{
     type:String
   },
-  result:{
-    type:Number,
-    enum:[0,1,-1],
-    default:0
+  Payment:{
+    type:String,
+    enum:["online","cod",],
+    default:"cod"
   },
   vendor_name:{
     type:String
@@ -47,12 +47,14 @@ const LeadSchema = new Schema({
     type:Number
   },
   date:{
+    type:Date
+  },
+  Address:{
     type:String
   }
   
 });
 
 
-const Lead = mongoose.model("Lead", LeadSchema);
-exports.Lead =Lead;
-exports.LeadSchema = LeadSchema;
+const Order = mongoose.model("Order", OrderSchema);
+exports.Order =Order;

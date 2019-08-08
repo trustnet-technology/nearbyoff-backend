@@ -4,6 +4,8 @@ const cookieParser = require("cookie-parser");
 const vendors = require("./routes/vendors");
 const threads = require("./routes/threads");
 const users = require("./routes/users");
+const city = require("./routes/cities");
+const category = require("./routes/categories");
 const leads = require("./routes/leads");
 const validity = require("./routes/validity");
 const posts = require("./routes/posts");
@@ -13,6 +15,8 @@ const app = express();
 const bodyParser=require("body-parser");
 const mongoose=require("mongoose");
 const RateLimit = require("express-rate-limit");
+const paginate = require('express-paginate');
+app.use(paginate.middleware(10, 50));
 
 
 mongoose.connect("mongodb+srv://aseem7570:aseem@123@cluster0-fxsdz.mongodb.net/test?retryWrites=true&w=majority", {useNewUrlParser: true})
@@ -47,6 +51,8 @@ app.use("/v1/api/posts", posts, apiLimiter);
 app.use("/v1/api/leads", leads, apiLimiter);
 app.use("/v1/api/products", products, apiLimiter);
 app.use("/v1/api/validity", validity, apiLimiter);
+app.use("/v1/api/city", city, apiLimiter);
+app.use("/v1/api/category", category, apiLimiter);
 
 app.get("/", apiLimiter, function(req, res) {
   res.send({title: "Home Page"});

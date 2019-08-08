@@ -3,6 +3,7 @@ const auth=require("../middleware/auth");
 const admin_middleware=require("../middleware/admin");
 const {Vendor} = require("../models/vendor");
 const {Product} = require("../models/product");
+const {Inventory} = require("../models/inventory");
 const _ =require("lodash");
 const express = require("express");
 const router = express.Router();
@@ -17,8 +18,9 @@ res.send(e);
 });
 
 
-router.put('/approve_product/:product_id',auth,admin_middleware ,async(req,res)=>{
-Product.findOneAndUpdate({product_id:req.params.product_id},{$set:{is_approved:req.body.action}},
+router.put('/approve_product/:product_variant_id',auth,admin_middleware ,async(req,res)=>{
+Inventory.findOneAndUpdate({product_variant_id:req.params.product_variant_id},
+{$set:{is_approved:req.body.action}},
 {useFindAndModify: false, new: true}).then((d)=>{
 res.send(d)  
 }).catch((e)=>{
