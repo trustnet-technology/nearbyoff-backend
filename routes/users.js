@@ -25,7 +25,7 @@ router.post("/signup", async (req, res) => {
 
   await user.save();
   const token=user.generateAuthToken()
-  res.header("x-auth-token", token).send(_.pick(user, ["name", "email"]));
+  res.header("x-auth-token", token).send({name:user.name,email:user.email,success:true});
 });
 
 
@@ -47,8 +47,9 @@ router.post("/signin", async (req, res) => {
   });
   var flag=await _.pick(user, ["isAdmin"]).isAdmin
   var regflag= await _.pick(user, ["isOnboarded"]).isOnboarded
+
   const token=user.generateAuthToken();
-  res.send({token: token, message: "login Success",success:true,Admin:flag,Onboarded:regflag});
+  res.send({token: token, message: "login Success",success:true,Admin:flag,Onboarded:regflag,vendor_id});
 });
 
 function validatesignin(user) {
@@ -89,7 +90,7 @@ router.get('/allusers', async (req, res, next) => {
     const pageCount = Math.ceil(itemCount / req.query.limit);
  
     if (req.accepts('json')) {
-      // inspired by Stripe's API response for list objects
+     
       res.json({
         total_pages:pageCount,
         object: 'list',

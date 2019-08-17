@@ -2,6 +2,7 @@ const _ =require("lodash");
 
 const {Vendor} = require("../models/vendor");
 const {Product} = require("../models/product");
+const {Inventory} = require("../models/inventory");
 const {User} = require("../models/user");
 
 const auth=require("../middleware/auth");
@@ -128,33 +129,44 @@ googleMapsClient.geocode({
 router.put("/onboarding_images", auth, async (req, res) => {
   const vendor=await Vendor.findOneAndUpdate({vendor_id: req.body.vendor_id},
       {$push: {category_images: req.body.category_image, shop_images: req.body.shop_image}}
-      // {$set: {cabodytegory_images: req.body.category_images, shop_images: req.body.shop_images}}
       ,{new: true});
   res.send({vendor,Success:true});
 });
 
 
 
-router.get("/products/:vendor_id", auth, async (req, res) => {
-  Product.aggregate([
-    {$match: {vendor_id: req.params.vendor_id}},
-    {$group: {
-      _id: "$category", prices: {$push: "$Price"},quantities:{$push:'$quantity'},Names:{$push:'$product_name'}}},
-  ]).then((d)=>{
-    res.send(d);
-  });
+
+
+router.get("/allproducts/:vendor_id",auth,async (req, res) => {
+  
+
+let products=await Inventory.aggregate([
+  { "$match": { "vendor_id": req.params.vendor_id }},
+  { 
+      "$lookup": 
+      { 
+          "from": 'products', 
+          "localField": 'product_id', 
+          "foreignField": 'product_id', 
+          "as": 'Products' 
+      } 
+  } 
+
+])
+res.send(products)
+
+
 });
 
-router.get("/allproducts/:vendor_id", auth, async (req, res) => {
-  Product.find({vendor_id:req.params.vendor_id})
-  .then((d)=>{
-    res.send(d);
-  })
-  .catch((e)=>{
-    res.send(e)
-  })
-});
-
+// router.get("/products/:vendor_id", auth, async (req, res) => {
+//   Product.aggregate([
+//     {$match: {vendor_id: req.params.vendor_id}},
+//     {$group: {
+//       _id: "$category", prices: {$push: "$Price"},quantities:{$push:'$quantity'},Names:{$push:'$product_name'}}},
+//   ]).then((d)=>{
+//     res.send(d);
+//   });
+// });
 
 router.get("/info/:vendor_id", auth, async (req, res) => {
 Vendor.findOne({vendor_id:req.params.vendor_id},{products:0,vendor_id:0,_id:0,user_id:0,__v:0})
@@ -166,4 +178,17 @@ res.send({err});
 })
 });
 
+router.get("/check_main_vendor/:vendor_id", auth, async (req, res) => {
+  Vendor.findOne({vendor_id:req.params.vendor_id},{is_main_vendor:1})
+  .then((data)=>{
+  res.send({vendor_info:data});
+  })
+  .catch((err)=>{
+  res.send({err});
+  })
+  });
+
 module.exports=router;
+
+
+//http://localhost:3000/v1/api/vendors/allproducts/5d2c2ed714272f2cb442d0ea1563909781740

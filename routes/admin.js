@@ -18,11 +18,18 @@ res.send(e);
 });
 
 
-router.put('/approve_product/:product_variant_id',auth,admin_middleware ,async(req,res)=>{
-Inventory.findOneAndUpdate({product_variant_id:req.params.product_variant_id},
-{$set:{is_approved:req.body.action}},
+router.put('/approve_product',auth,admin_middleware ,async(req,res)=>{
+Inventory.findOneAndUpdate({
+    product_variant_id:req.body.product_variant_id,
+    product_id:req.body.product_id,
+    vendor_id:req.body.vendor_id    
+},
+{
+$set: { unapproved_quantity: 0 }, 
+$inc: { approved_quantity:req.body.unapproved_quantity} 
+},
 {useFindAndModify: false, new: true}).then((d)=>{
-res.send(d)  
+res.send({d,success:true})  
 }).catch((e)=>{
 res.send(e);
 })
@@ -38,6 +45,24 @@ res.send(e);
 })
 });
 
+router.get('/unapproved_products',auth,admin_middleware,async(req,res)=>{
+
+    let products=await Inventory.aggregate([
+        { "$match": { unapproved_quantity: { $gt:0}}},
+        { 
+            "$lookup": 
+            { 
+                "from": 'products', 
+                "localField": 'product_id', 
+                "foreignField": 'product_id', 
+                "as": 'Products' 
+            } 
+        },
+        
+      ])
+
+      res.send(products)
+});
 
 
 router.get('/',auth,admin_middleware ,async(req,res)=>{

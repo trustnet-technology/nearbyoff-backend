@@ -6,8 +6,7 @@ product_id:{
 type:String
 },
 product_variant_id:{
-    type: String,
-    unique: true,
+    type: String
 },
 MRP:{
     type: Number
@@ -19,7 +18,7 @@ weight:{
     type:String
 },
 size:{
-    type:Number
+    type:String
 },
 color:{
     type:String

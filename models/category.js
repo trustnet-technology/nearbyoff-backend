@@ -18,7 +18,7 @@ const CategorySchema = new Schema({
     type:[String]
   },
   size:{
-    type:[Number]
+    type:[String]
   },
   color:{
     type:[String]

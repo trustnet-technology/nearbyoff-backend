@@ -9,12 +9,17 @@ const InventorySchema = new Schema({
     type: String,
     unique: true,
   },
-  is_approved:{
-    type:Boolean,
-    default:false
+  product_id:{
+    type:String
   },
-  quantity: {
+  approved_quantity: {
     type: Number
+  },
+  unapproved_quantity: {
+    type: Number
+  },
+  is_main_vendor:{
+    type:Boolean
   }
   
 });

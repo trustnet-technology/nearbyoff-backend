@@ -14,6 +14,7 @@ categoryid:String(req.body.category).substring(0,4),
 subcategoryid:String(req.body.subcategory).substring(0,4)
 })    
 
+
 if(req.body.weight)
 category.weight=req.body.weight
 
@@ -29,6 +30,14 @@ res.send('category saved');
 
 });
     
+
+router.get('/all',async(req,res)=>{
+
+Category.find({}).then((d)=>{
+    res.send(d)
+})
+
+})
 
 
 
