@@ -12,6 +12,7 @@ const posts = require("./routes/posts");
 const admin = require("./routes/admin");
 const products = require("./routes/products");
 const app = express();
+const queue=require("./middleware/queue");
 const bodyParser=require("body-parser");
 const mongoose=require("mongoose");
 const RateLimit = require("express-rate-limit");
@@ -19,12 +20,14 @@ const paginate = require('express-paginate');
 app.use(paginate.middleware(10, 50));
 
 
-mongoose.connect("mongodb+srv://aseem7570:aseem@123@cluster0-fxsdz.mongodb.net/test?retryWrites=true&w=majority", {useNewUrlParser: true})
+mongoose.connect("mongodb+srv://aseem7570:aseem@123@cluster0-fxsdz.mongodb.net/test?retryWrites=true&w=majority", {useNewUrlParser: true
+
+})
     .then(() => console.log("Connected to MongoDB..."))
     .catch((err) => console.error("Could not connect to MongoDB..."));
 
-
 app.listen(3000, () => console.log("Connected on port 3000!"));
+
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept,x-auth-token");
@@ -57,4 +60,5 @@ app.use("/v1/api/category", category, apiLimiter);
 app.get("/", apiLimiter, function(req, res) {
   res.send({title: "Home Page"});
 });
+
 

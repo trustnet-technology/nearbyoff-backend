@@ -10,6 +10,15 @@ const LeadSchema = new Schema({
    type:String,
    require:true
   },
+  product_id:{
+    type:String,
+    require:true
+   },
+
+  user_id: {
+    type: String,
+    
+  },
   contact_no:{
   type:Number,
   require:true,

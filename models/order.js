@@ -2,19 +2,33 @@ const mongoose= require("mongoose");
 
 Schema=mongoose.Schema;
 const OrderSchema = new Schema({
-  vendor_id:{
+  vendor_id: {
     type: String,
-    require:true
+    require: true,
   },
-  product_variant_id:{
-   type:String,
-   require:true
+  order_id: {
+    type: String,
+    
   },
-  contact_no:{
-  type:Number,
-  require:true,
-  minLength:10,
-  maxLength:10
+
+  user_id: {
+    type: String,
+    
+  },
+  
+  product_variant_id: {
+    type: String,
+    
+  },
+  product_id: {
+    type: String,
+    
+  },
+  contact_no: {
+    type: Number,
+    
+    minLength: 10,
+    maxLength: 10,
   },
   quantity: {
     type: Number,
@@ -25,34 +39,36 @@ const OrderSchema = new Schema({
   product_desc: {
     type: String,
   },
-  images:{
+  images: {
     type: [String],
     default: [],
   },
-  customer_name:{
-    type:String  
+  customer_name: {
+    type: String,
   },
-  comment:{
-    type:String
+  comment: {
+    type: String,
   },
-  Payment:{
-    type:String,
-    enum:["online","cod",],
-    default:"cod"
+  payment_method: {
+    type: String,
+    enum: ["online", "cod"]
   },
-  vendor_name:{
-    type:String
+  vendor_name: {
+    type: String,
   },
-  product_price:{
-    type:Number
+  product_price: {
+    type: Number,
   },
-  date:{
-    type:Date
+  date: {
+    type: Date,
   },
-  Address:{
+  Address: {
+    type: String,
+  },
+  status:{
     type:String
   }
-  
+
 });
 
 

@@ -1,4 +1,6 @@
 const _ =require("lodash");
+var multer  = require('multer');
+var AWS = require('aws-sdk');
 
 const {Vendor} = require("../models/vendor");
 const {Product} = require("../models/product");
@@ -6,6 +8,7 @@ const {Inventory} = require("../models/inventory");
 const {User} = require("../models/user");
 
 const auth=require("../middleware/auth");
+const queue=require("../middleware/queue");
 const express = require("express");
 const router = express.Router();
 const jwt=require("jsonwebtoken");
@@ -48,6 +51,17 @@ router.post("/register", auth, async (req, res) => {
   });
   await User.findOneAndUpdate({_id:decoded._id},
     {$set: {vendor_id: Vendor_Id}})
+
+
+    await queue({body:JSON.stringify({
+      sellerId:Vendor_Id,
+      contactNumber: req.body.contact_no,
+      sellerName: req.body.vendor_name,
+      address:req.body.Address1,
+      createdDate: Date.now(),
+      modifiedDate:Date.now(),
+      }),accountId:'524486326329',queueName:'NearbyOff_Addvendor_Queue'})
+    
   res.send({vendor,Success:true});
     }
     else{
@@ -71,7 +85,17 @@ router.post("/register", auth, async (req, res) => {
   });
   await User.findOneAndUpdate({_id:decoded._id},
     {$set: {vendor_id: Vendor_Id}})
-  res.send({vendor,Success:true});
+
+  await queue({body:JSON.stringify({
+    sellerId:Vendor_Id,
+    contactNumber: req.body.contact_no,
+    sellerName: req.body.vendor_name,
+    address:req.body.Address1,
+    createdDate: Date.now(),
+    modifiedDate:Date.now(),
+    }),accountId:'524486326329',queueName:'NearbyOff_Addvendor_Queue'})
+    
+res.send({vendor,Success:true});
 
     }
     
@@ -101,6 +125,15 @@ router.put("/onboarding", auth, async (req, res) => {
     }},
       {useFindAndModify: false, new: true});
   await User.findOneAndUpdate({_id:decoded._id}, {$set: {isOnboarded:true }});
+  
+  await queue({body:JSON.stringify({
+    sellerId:Vendor_Id,
+    openingHour:req.body.opening_time,
+    closingHour:req.body.closing_time,
+    address:String(req.body.Address1),
+    modifiedDate:String(Date.now()),
+    }),accountId:'524486326329',queueName:'NearbyOff_Addvendor_Queue'})
+  
   
   res.send({vendor,Success:true});
 });
@@ -188,7 +221,54 @@ router.get("/check_main_vendor/:vendor_id", auth, async (req, res) => {
   })
   });
 
+  var storage = multer.memoryStorage({
+      destination: function(req, file, callback) {
+          callback(null, '');
+      }
+  });
+  
+  var multipleUpload = multer({ storage: storage }).array('file');
+  
+  
+  router.post('/upload',multipleUpload,auth, async(req, res)=> {
+  const file = req.files;
+    
+    let s3bucket = new AWS.S3({
+      accessKeyId: "AKIAXUHOSHA44HHJ5JBE",
+      secretAccessKey: "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",
+      Bucket: 'com.file.upload'
+    });
+   
+  var ResponseData = [];
+     
+  file.map((item) => {
+        var params = {
+          Bucket: 'com.file.upload',
+          Key: "folder/"+Date.now()+item.originalname,
+          Body: item.buffer,
+          ACL: 'public-read'
+      
+    };
+    
+    s3bucket.upload(params, function (err, data) {
+          if (err) {
+           res.json({ "success": false, "Message": err});
+          }
+          else{
+              ResponseData.push(data.Location);
+              if(ResponseData.length == file.length){
+                res.send({ "success": true, "Message": "File Uploaded", Data: ResponseData});
+              }
+            }
+         });
+       });
+     
+  });
+
+
 module.exports=router;
 
 
+
 //http://localhost:3000/v1/api/vendors/allproducts/5d2c2ed714272f2cb442d0ea1563909781740
+//NearbyOff_AddProductSeller_Queue

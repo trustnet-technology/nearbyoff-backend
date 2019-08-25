@@ -1,9 +1,10 @@
+/* eslint-disable key-spacing */
 const mongoose= require("mongoose");
 
 Schema=mongoose.Schema;
 const ProductSchema = new Schema({
   vendor_id:{
-    type:String
+    type:String,
   },
   category: {
     type: String,
@@ -23,15 +24,15 @@ const ProductSchema = new Schema({
   },
   is_main_vendor:{
     type:Boolean,
-    default:false
+    default:false,
   },
   product_name: {
     type: String,
-    default:""
+    default:"",
   },
   brand_name: {
     type: String,
-    default:""
+    default:"",
   },
   product_desc: {
     type: String,
@@ -41,11 +42,11 @@ const ProductSchema = new Schema({
     default: [],
   },
   city:{
-    type:String
+    type:String,
   },
   title:{
-    type:String
-  }
+    type:String,
+  },
 
 });
 

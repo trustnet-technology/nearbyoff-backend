@@ -16,7 +16,9 @@ let vendor=await Vendor.findOne({vendor_id_id:req.body.vendor_id});
 vendor=vendor.vendor_name;
 const lead= new Lead({
 product_variant_id:req.body.product_variant_id,
+product_id:req.body.product_id,
 date:Date.now(),
+user_id:req.body.user_id,
 contact_no:req.body.contact_no,
 quantity:req.body.quantity,
 product_price:product.Price,

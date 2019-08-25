@@ -5,6 +5,7 @@ const {Vendor} = require("../models/vendor");
 const {Product} = require("../models/product");
 const {Inventory} = require("../models/inventory");
 const _ =require("lodash");
+const queue=require("../middleware/queue");
 const express = require("express");
 const router = express.Router();
 
@@ -29,6 +30,15 @@ $set: { unapproved_quantity: 0 },
 $inc: { approved_quantity:req.body.unapproved_quantity} 
 },
 {useFindAndModify: false, new: true}).then((d)=>{
+
+await queue({body:JSON.stringify({
+productAttributeId:req.body.product_variant_id,
+sellerId: req.body.vendor_id,
+count:req.body.unapproved_quantity,
+modifiedDate: Date.now(),
+}),accountId:'524486326329',queueName:'NearbyOff_AddProductSeller_Queue'})
+    
+    
 res.send({d,success:true})  
 }).catch((e)=>{
 res.send(e);
