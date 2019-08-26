@@ -10,17 +10,37 @@ const express = require("express");
 const router = express.Router();
 
 router.put('/approve_vendor/:vendor_id',auth,admin_middleware ,async(req,res)=>{
-Vendor.findOneAndUpdate({vendor_id:req.params.vendor_id},{$set:{is_approved:req.body.action}},
-{useFindAndModify: false, new: true}).then((d)=>{
-res.send(d)  
-}).catch((e)=>{
-res.send(e);
-})
-});
+let vendor=await Vendor.findOne({vendor_id:req.params.vendor_id});   
 
+let d=await Vendor.findOneAndUpdate({vendor_id:req.params.vendor_id},{$set:{is_approved:req.body.action}},
+{useFindAndModify: false, new: true})
+
+await queue({body:JSON.stringify({
+	sellerId: vendor.vendor_id,
+	contactNumber: vendor.contact_no,
+	openingHour: vendor.opening_time,
+	closingHour: vendor.closing_time,
+	sellerName:vendor.vendor_name,
+	pincode: "",
+	profileImage: "img.png",
+	address: vendor.Address.Address1,
+	createdDate: Date.now(),
+	modifiedDate: Date.now(),
+}),accountId:'524486326329',queueName:'NearbyOff_Addvendor_Queue'})
+
+res.send({d});
+
+});
+    
 
 router.put('/approve_product',auth,admin_middleware ,async(req,res)=>{
-Inventory.findOneAndUpdate({
+let inventory=await Inventory.findOne({
+    product_variant_id:req.body.product_variant_id,
+    product_id:req.body.product_id,
+    vendor_id:req.body.vendor_id    
+})
+
+await Inventory.findOneAndUpdate({
     product_variant_id:req.body.product_variant_id,
     product_id:req.body.product_id,
     vendor_id:req.body.vendor_id    
@@ -29,20 +49,19 @@ Inventory.findOneAndUpdate({
 $set: { unapproved_quantity: 0 }, 
 $inc: { approved_quantity:req.body.unapproved_quantity} 
 },
-{useFindAndModify: false, new: true}).then((d)=>{
+{useFindAndModify: false, new: true});
+
 
 await queue({body:JSON.stringify({
 productAttributeId:req.body.product_variant_id,
 sellerId: req.body.vendor_id,
-count:req.body.unapproved_quantity,
+count:req.body.unapproved_quantity+inventory.approved_quantity,
 modifiedDate: Date.now(),
 }),accountId:'524486326329',queueName:'NearbyOff_AddProductSeller_Queue'})
     
     
-res.send({d,success:true})  
-}).catch((e)=>{
-res.send(e);
-})
+res.send({message:"success"});
+
 });
 
 

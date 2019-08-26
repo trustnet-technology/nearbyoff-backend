@@ -140,7 +140,7 @@ await queue({body:JSON.stringify({
   subCategoryId: req.body.subcategory_id,
   createdDate: Date.now(),
   modifiedDate: Date.now(),
-  prductTitle:String(req.body.product_name)+String(req.body.brand_name),
+  productTitle:String(req.body.product_name)+String(req.body.brand_name),
   description: "default desc",
   cityId: req.body.city,
   isTopProduct: "1",
@@ -189,6 +189,7 @@ res.send(cities)
 router.get("/variant/:product_id/:product_variant_id",auth,async(req,res)=>{
 await Variant.findOne({product_variant_id:req.params.product_variant_id,
   product_id:req.params.product_id}).then((product)=>{
+    
   res.send(product)
   })
   })

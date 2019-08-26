@@ -49,7 +49,7 @@ router.post("/signin", async (req, res) => {
   var regflag= await _.pick(user, ["isOnboarded"]).isOnboarded
 
   const token=user.generateAuthToken();
-  res.send({token: token, message: "login Success",success:true,Admin:flag,Onboarded:regflag,vendor_id});
+  res.send({token: token, message: "login Success",success:true,Admin:flag,Onboarded:regflag,vendor_id:user.vendor_id});
 });
 
 function validatesignin(user) {

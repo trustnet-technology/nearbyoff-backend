@@ -16,6 +16,8 @@ const jwt=require("jsonwebtoken");
 var googleMapsClient = require('@google/maps').createClient({
   key:'AIzaSyCPq73ZhDozL2oRl9jfqO_4xZpBMOCJA84'
 });
+
+
 router.post("/register", auth, async (req, res) => {
   var lat="";
   var lng="";
@@ -53,14 +55,6 @@ router.post("/register", auth, async (req, res) => {
     {$set: {vendor_id: Vendor_Id}})
 
 
-    await queue({body:JSON.stringify({
-      sellerId:Vendor_Id,
-      contactNumber: req.body.contact_no,
-      sellerName: req.body.vendor_name,
-      address:req.body.Address1,
-      createdDate: Date.now(),
-      modifiedDate:Date.now(),
-      }),accountId:'524486326329',queueName:'NearbyOff_Addvendor_Queue'})
     
   res.send({vendor,Success:true});
     }
@@ -86,14 +80,6 @@ router.post("/register", auth, async (req, res) => {
   await User.findOneAndUpdate({_id:decoded._id},
     {$set: {vendor_id: Vendor_Id}})
 
-  await queue({body:JSON.stringify({
-    sellerId:Vendor_Id,
-    contactNumber: req.body.contact_no,
-    sellerName: req.body.vendor_name,
-    address:req.body.Address1,
-    createdDate: Date.now(),
-    modifiedDate:Date.now(),
-    }),accountId:'524486326329',queueName:'NearbyOff_Addvendor_Queue'})
     
 res.send({vendor,Success:true});
 
@@ -124,13 +110,13 @@ router.put("/onboarding", auth, async (req, res) => {
       operating_hrs: { opening_time: req.body.opening_time, closing_time: req.body.closing_time},
     }},
       {useFindAndModify: false, new: true});
+      
   await User.findOneAndUpdate({_id:decoded._id}, {$set: {isOnboarded:true }});
   
   await queue({body:JSON.stringify({
-    sellerId:Vendor_Id,
+    sellerId:req.body.vendor_id,
     openingHour:req.body.opening_time,
     closingHour:req.body.closing_time,
-    address:String(req.body.Address1),
     modifiedDate:String(Date.now()),
     }),accountId:'524486326329',queueName:'NearbyOff_Addvendor_Queue'})
   
