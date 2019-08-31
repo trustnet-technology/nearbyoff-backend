@@ -2,6 +2,9 @@
 module.exports=async function queue(req, res) {
 const AWS = require('aws-sdk');
 AWS.config.update({
+    region: 'us-east-1',
+    accessKeyId: process.env.accesskey,
+    secretAccessKey: process.env.secretaccesskey
 
 });
 const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
