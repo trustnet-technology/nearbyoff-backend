@@ -220,6 +220,9 @@ router.get("/check_main_vendor/:vendor_id", auth, async (req, res) => {
   const file = req.files;
     
     let s3bucket = new AWS.S3({
+    region: 'us-east-1',
+    accessKeyId: process.env.accesskey,
+    secretAccessKey: process.env.secretaccesskey
 
     });
    
